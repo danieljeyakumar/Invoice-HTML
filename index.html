@@ -1,305 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Invoice - COMPUTERHOUZ</title>
-<link rel="icon" type="image/png" href="images/favicon.png" />
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  @media print {
-    body { margin:0; padding:0; }
-    .no-print { display:none !important; }
-    @page { margin:1cm; }
-    .invoice-table col.col-action { width:0 !important; }
-    .bill-to > :first-child { margin-top:0; }
-  }
-  input, textarea, select { outline:none; }
-  input:focus, textarea:focus, select:focus {
-    border-color:#06b6d4;
-    box-shadow:0 0 0 3px rgba(6,182,212,0.12);
-  }
-  .invoice-table col.col-qty { width:60px; }
-  .invoice-table col.col-price { width:140px; }
-  .invoice-table col.col-action { width:120px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice - COMPUTERHOUZ</title>
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    @media print {
+      body { margin:0; padding:0; }
+      .no-print { display:none !important; }
+      @page { margin:1cm; }
+      .invoice-table col.col-action { width:0 !important; }
+      .bill-to > :first-child { margin-top:0; }
+    }
+    input, textarea, select { outline:none; }
+    input:focus, textarea:focus, select:focus {
+      border-color: #06b6d4;
+      box-shadow: 0 0 0 3px rgba(6,182,212,0.12);
+    }
+    .invoice-table col.col-qty { width: 60px; }
+    .invoice-table col.col-price { width: 140px; }
+    .invoice-table col.col-action { width: 120px; }
+  </style>
 </head>
 <body class="bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900">
-<div class="max-w-5xl mx-auto bg-white shadow-2xl p-10 my-10 rounded-2xl border border-gray-100">
-  <!-- Header -->
-  <div class="mb-8 pb-6">
-    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-      <div class="space-y-2 text-left">
-        <h2 class="text-4xl font-bold text-gray-900">INVOICE</h2>
-        <div class="text-sm text-gray-700">
-          <p>Issued: <span id="issuedDateText"></span></p>
-          <p style="font-size: 9px; color: #6B7280;">SA0284354-K</p>
+  <div class="max-w-5xl mx-auto bg-white shadow-2xl p-10 my-10 rounded-2xl border border-gray-100">
+    <!-- Header -->
+    <div class="mb-8 pb-6">
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+        <div class="space-y-2 text-left">
+          <h2 class="text-4xl font-bold text-gray-900">INVOICE</h2>
+          <div class="text-sm text-gray-700">
+            <p>Issued: <span id="issuedDateText"></span></p>
+            <p style="font-size: 9px; color: #6B7280;">SA0284354-K</p>
+          </div>
+        </div>
+        <div class="text-right space-y-1">
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-wide uppercase">COMPUTERHOUZ</h1>
+          <p class="text-sm text-gray-600">Sales & Service — Since 2013</p>
+          <p class="text-xs text-gray-500">Empowering Technology Solutions for Tomorrow</p>
         </div>
       </div>
-      <div class="text-right space-y-1">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-wide uppercase">COMPUTERHOUZ</h1>
-        <p class="text-sm text-gray-600">Sales & Service — Since 2013</p>
-        <p class="text-xs text-gray-500">Empowering Technology Solutions for Tomorrow</p>
-      </div>
     </div>
-  </div>
 
-  <!-- Company Info & Invoice Details -->
-  <div class="grid md:grid-cols-2 gap-8 mb-10">
-    <div>
-      <h3 class="font-semibold text-gray-900 mb-3">From</h3>
-      <p class="text-sm text-gray-700 font-medium">COMPUTERHOUZ</p>
-      <p class="text-sm text-gray-700">Jalan BU1/1, Bandar Utama</p>
-      <p class="text-sm text-gray-700">47800 Petaling Jaya</p>
-      <p class="text-sm text-gray-700 mt-2">Phone: +60 19-330 2841</p>
-      <p class="text-sm text-gray-700">Email: jeyakumar.jayamany@gmail.com</p>
-    </div>
-    <div class="grid gap-4">
-      <div class="grid grid-cols-2 gap-4">
+    <!-- Company Info & Invoice Details -->
+    <div class="grid md:grid-cols-2 gap-8 mb-10">
+      <div>
+        <h3 class="font-semibold text-gray-900 mb-3">From</h3>
+        <p class="text-sm text-gray-700 font-medium">COMPUTERHOUZ</p>
+        <p class="text-sm text-gray-700">Jalan BU1/1, Bandar Utama</p>
+        <p class="text-sm text-gray-700">47800 Petaling Jaya</p>
+        <p class="text-sm text-gray-700 mt-2">Phone: +60 19-330 2841</p>
+        <p class="text-sm text-gray-700">Email: jeyakumar.jayamany@gmail.com</p>
+      </div>
+      <div class="grid gap-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+            <input type="date" id="invoiceDate" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+            <input type="date" id="dueDate" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
+          </div>
+        </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-          <input type="date" id="invoiceDate" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
+          <label class="block text-sm font-medium text-gray-700 mb-1">Invoice Number</label>
+          <input type="text" id="invoiceNumber" class="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-gray-50" placeholder="INV-yyyy/mm/dd" readonly />
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Info -->
+    <div class="mb-8">
+      <h3 class="font-semibold text-gray-900 mb-4">Bill To</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
+          <select id="customerName" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+            <option value="">-- Select Customer --</option>
+          </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-          <input type="date" id="dueDate" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
+          <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+          <input type="text" id="customerPhone" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" readonly />
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+          <input type="text" id="customerAddress" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" readonly />
         </div>
       </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Invoice Number</label>
-        <input type="text" id="invoiceNumber" class="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-gray-50" placeholder="INV-yyyy/mm/dd" readonly />
+    </div>
+
+    <!-- Job Description Box -->
+    <div class="mb-8">
+      <h3 class="font-semibold text-gray-900 mb-3">Job Description</h3>
+      <textarea
+        id="jobDescription"
+        rows="6"
+        class="w-full border border-gray-300 rounded px-3 py-2 text-sm resize-y"
+        placeholder="Enter job description, work performed, diagnostics, parts replaced, customer instructions, etc."
+      ></textarea>
+    </div>
+
+    <!-- Items Table -->
+    <div class="mb-10">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
+        <h3 class="font-semibold text-gray-900">Items / Services</h3>
+        <p class="text-xs text-gray-500 no-print">Use the add button to include multiple labour lines or spare parts</p>
       </div>
+      <div class="overflow-x-auto">
+        <table class="invoice-table w-full border-collapse text-sm">
+          <colgroup>
+            <col class="col-qty" />
+            <col />
+            <col class="col-price" />
+            <col />
+            <col class="col-action" />
+          </colgroup>
+          <thead>
+            <tr class="bg-gray-100 text-gray-700 uppercase tracking-wide text-xs">
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Qty</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Description</th>
+              <th class="border border-gray-300 px-3 py-2 text-right font-semibold">Unit Price (RM)</th>
+              <th class="border border-gray-300 px-3 py-2 text-right font-semibold">Total (RM)</th>
+              <th class="border border-gray-300 px-3 py-2 text-center font-semibold no-print">Action</th>
+            </tr>
+          </thead>
+          <tbody id="itemsTableBody">
+            <tr>
+              <td class="border border-gray-300 px-3 py-2">
+                <input type="number" class="item-qty w-full border-0 px-1 py-1 text-center" value="1" min="0" step="0.01" />
+              </td>
+              <td class="border border-gray-300 px-3 py-2">
+                <input type="text" class="item-desc w-full border-0 px-1 py-1" placeholder="Enter item/service description" />
+              </td>
+              <td class="border border-gray-300 px-3 py-2">
+                <input type="number" class="item-price w-full border-0 px-1 py-1 text-right" value="0.00" min="0" step="0.01" />
+              </td>
+              <td class="border border-gray-300 px-3 py-2 text-right">
+                <span class="item-total font-medium inline-block min-w-[70px] text-right">0.00</span>
+              </td>
+              <td class="border border-gray-300 px-3 py-2 text-center no-print">
+                <button type="button" class="remove-item text-red-600 hover:text-red-800 font-medium">Remove</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button type="button" id="addItemBtn" class="mt-4 bg-cyan-500 text-white px-5 py-2 rounded text-sm font-semibold hover:bg-cyan-600 no-print">
+        + Add Item / Service
+      </button>
+    </div>
+
+    <!-- Payment Methods -->
+    <div class="mb-8">
+      <h3 class="font-semibold text-gray-900 mb-4">Preferred Payment Methods</h3>
+      <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
+        <div class="p-4 border border-gray-200 rounded-xl">
+          <p class="font-semibold text-gray-900">Bank Transfer</p>
+          <p>JEYAKUMAR JAYAMANY<br />Maybank • 114301363561</p>
+        </div>
+        <div class="p-4 border border-gray-200 rounded-xl bg-gray-50">
+          <p class="font-semibold text-gray-900">Subtotal</p>
+          <p class="text-2xl font-bold text-gray-900" id="subtotalValue">RM 0.00</p>
+          <p class="text-xs text-gray-500 mt-1 no-print">Updated automatically from line items.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="border-t border-gray-200 pt-6 text-center text-sm text-gray-600">
+      <p>Thank you for your business!</p>
+      <p class="mt-2">This document is computer generated and requires no signature</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-10 flex flex-wrap gap-4 justify-center no-print">
+      <button type="button" id="printBtn" class="bg-gray-800 text-white px-6 py-2 rounded font-medium hover:bg-gray-900 transition">Print Invoice</button>
+      <button type="button" id="saveBtn" class="bg-green-600 text-white px-6 py-2 rounded font-medium hover:bg-green-700 transition">Save / Export PDF</button>
+      <button type="button" id="clearBtn" class="bg-red-500 text-white px-6 py-2 rounded font-medium hover:bg-red-600 transition">Clear All</button>
     </div>
   </div>
 
-  <!-- Customer Info -->
-  <div class="mb-8">
-    <h3 class="font-semibold text-gray-900 mb-4">Bill To</h3>
-    <div class="grid md:grid-cols-2 gap-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
-        <select id="customerName" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
-          <option value="">-- Select Customer --</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-        <input type="text" id="customerPhone" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" readonly />
-      </div>
-      <div class="md:col-span-2">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-        <input type="text" id="customerAddress" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" readonly />
-      </div>
-    </div>
-  </div>
+  <script>
+    // Invoice dates
+    const invoiceDateInput = document.getElementById('invoiceDate');
+    const dueDateInput = document.getElementById('dueDate');
+    const invoiceNumberInput = document.getElementById('invoiceNumber');
+    const issuedDateText = document.getElementById('issuedDateText');
 
-  <!-- Job Description Box -->
-  <div class="mb-8">
-    <h3 class="font-semibold text-gray-900 mb-3">Job Description</h3>
-    <textarea id="jobDescription" rows="6" class="w-full border border-gray-300 rounded px-3 py-2 text-sm resize-y" placeholder="Enter job description, work performed, diagnostics, parts replaced, customer instructions, etc."></textarea>
-  </div>
+    function formatInvoiceNumber(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2,'0');
+      const day = String(date.getDate()).padStart(2,'0');
+      return `INV-${year}/${month}/${day}`;
+    }
 
-  <!-- Items Table -->
-  <div class="mb-10">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
-      <h3 class="font-semibold text-gray-900">Items / Services</h3>
-      <p class="text-xs text-gray-500 no-print">Use the add button to include multiple labour lines or spare parts</p>
-    </div>
-    <div class="overflow-x-auto">
-      <table class="invoice-table w-full border-collapse text-sm">
-        <colgroup>
-          <col class="col-qty" />
-          <col />
-          <col class="col-price" />
-          <col />
-          <col class="col-action" />
-        </colgroup>
-        <thead>
-          <tr class="bg-gray-100 text-gray-700 uppercase tracking-wide text-xs">
-            <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Qty</th>
-            <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Description</th>
-            <th class="border border-gray-300 px-3 py-2 text-right font-semibold">Unit Price (RM)</th>
-            <th class="border border-gray-300 px-3 py-2 text-right font-semibold">Total (RM)</th>
-            <th class="border border-gray-300 px-3 py-2 text-center font-semibold no-print">Action</th>
-          </tr>
-        </thead>
-        <tbody id="itemsTableBody">
-          <tr>
-            <td class="border border-gray-300 px-3 py-2">
-              <input type="number" class="item-qty w-full border-0 px-1 py-1 text-center" value="1" min="0" step="0.01" />
-            </td>
-            <td class="border border-gray-300 px-3 py-2">
-              <input type="text" class="item-desc w-full border-0 px-1 py-1" placeholder="Enter item/service description" />
-            </td>
-            <td class="border border-gray-300 px-3 py-2">
-              <input type="number" class="item-price w-full border-0 px-1 py-1 text-right" value="0.00" min="0" step="0.01" />
-            </td>
-            <td class="border border-gray-300 px-3 py-2 text-right">
-              <span class="item-total font-medium inline-block min-w-[70px] text-right">0.00</span>
-            </td>
-            <td class="border border-gray-300 px-3 py-2 text-center no-print">
-              <button type="button" class="remove-item text-red-600 hover:text-red-800 font-medium">Remove</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <button type="button" id="addItemBtn" class="mt-4 bg-cyan-500 text-white px-5 py-2 rounded text-sm font-semibold hover:bg-cyan-600 no-print">
-      + Add Item / Service
-    </button>
-  </div>
-
-  <!-- Payment Methods -->
-  <div class="mb-8">
-    <h3 class="font-semibold text-gray-900 mb-4">Preferred Payment Methods</h3>
-    <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
-      <div class="p-4 border border-gray-200 rounded-xl">
-        <p class="font-semibold text-gray-900">Bank Transfer</p>
-        <p>JEYAKUMAR JAYAMANY<br />Maybank • 114301363561</p>
-      </div>
-      <div class="p-4 border border-gray-200 rounded-xl bg-gray-50">
-        <p class="font-semibold text-gray-900">Subtotal</p>
-        <p class="text-2xl font-bold text-gray-900" id="subtotalValue">RM 0.00</p>
-        <p class="text-xs text-gray-500 mt-1 no-print">Updated automatically from line items.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <div class="border-t border-gray-200 pt-6 text-center text-sm text-gray-600">
-    <p>Thank you for your business!</p>
-    <p class="mt-2">This document is computer generated and requires no signature</p>
-  </div>
-
-  <!-- Action Buttons -->
-  <div class="mt-10 flex flex-wrap gap-4 justify-center no-print">
-    <button type="button" id="printBtn" class="bg-gray-800 text-white px-6 py-2 rounded font-medium hover:bg-gray-900 transition">Print Invoice</button>
-    <button type="button" id="saveBtn" class="bg-green-600 text-white px-6 py-2 rounded font-medium hover:bg-green-700 transition">Save / Export PDF</button>
-    <button type="button" id="clearBtn" class="bg-red-500 text-white px-6 py-2 rounded font-medium hover:bg-red-600 transition">Clear All</button>
-  </div>
-</div>
-
-<script>
-const invoiceDateInput=document.getElementById('invoiceDate');
-const dueDateInput=document.getElementById('dueDate');
-const invoiceNumberInput=document.getElementById('invoiceNumber');
-const issuedDateText=document.getElementById('issuedDateText');
-
-function formatInvoiceNumber(date){
-  const year=date.getFullYear();
-  const month=String(date.getMonth()+1).padStart(2,'0');
-  const day=String(date.getDate()).padStart(2,'0');
-  return `INV-${year}/${month}/${day}`;
-}
-
-function setDefaultDates(){
-  const today=new Date();
-  invoiceDateInput.valueAsDate=today;
-  const due=new Date(today);
-  due.setDate(due.getDate()+7);
-  dueDateInput.valueAsDate=due;
-  issuedDateText.textContent=today.toLocaleDateString();
-  invoiceNumberInput.value=formatInvoiceNumber(today);
-}
-setDefaultDates();
-invoiceDateInput.addEventListener('change',()=>{ 
-  const selectedDate=invoiceDateInput.value?new Date(invoiceDateInput.value):new Date();
-  invoiceNumberInput.value=formatInvoiceNumber(selectedDate);
-});
-
-// Items table logic
-function calculateItemTotal(row){
-  const qty=parseFloat(row.querySelector('.item-qty').value)||0;
-  const price=parseFloat(row.querySelector('.item-price').value)||0;
-  const total=qty*price;
-  row.querySelector('.item-total').textContent=total.toFixed(2);
-  updateSubtotal();
-}
-function updateSubtotal(){
-  const rows=document.querySelectorAll('#itemsTableBody tr');
-  let subtotal=0;
-  rows.forEach(row=>{ subtotal+=parseFloat(row.querySelector('.item-total').textContent)||0; });
-  document.getElementById('subtotalValue').textContent='RM '+subtotal.toFixed(2);
-}
-function attachListeners(row){
-  row.querySelector('.item-qty').addEventListener('input',()=>calculateItemTotal(row));
-  row.querySelector('.item-price').addEventListener('input',()=>calculateItemTotal(row));
-  row.querySelector('.remove-item').addEventListener('click',()=>{
-    if(document.querySelectorAll('#itemsTableBody tr').length>1){ row.remove(); updateSubtotal(); }
-    else alert('At least one item is required.');
-  });
-}
-attachListeners(document.querySelector('#itemsTableBody tr'));
-document.getElementById('addItemBtn').addEventListener('click',()=>{
-  const tbody=document.getElementById('itemsTableBody');
-  const newRow=document.createElement('tr');
-  newRow.innerHTML=tbody.querySelector('tr').innerHTML;
-  tbody.appendChild(newRow);
-  attachListeners(newRow);
-  updateSubtotal();
-});
-document.getElementById('printBtn').addEventListener('click',()=>window.print());
-document.getElementById('saveBtn').addEventListener('click',()=>window.print());
-document.getElementById('clearBtn').addEventListener('click',()=>{
-  if(!confirm('Are you sure you want to clear all data?')) return;
-  invoiceNumberInput.value=''; document.getElementById('customerName').value='';
-  document.getElementById('customerPhone').value=''; document.getElementById('customerAddress').value='';
-  document.getElementById('jobDescription').value='';
-  setDefaultDates();
-  const tbody=document.getElementById('itemsTableBody');
-  tbody.innerHTML=tbody.querySelector('tr').outerHTML;
-  attachListeners(tbody.querySelector('tr'));
-  updateSubtotal();
-});
-
-// Customer data from Google Sheet CSV
-let customerData=[];
-
-// Proper CSV parsing to preserve commas in quotes
-function parseCSVLine(line){
-  const regex=/("([^"]*)"|[^,]*)(,|$)/g;
-  const result=[];
-  let match;
-  while((match=regex.exec(line))!==null){
-    result.push(match[2]!==undefined?match[2]:match[1]);
-  }
-  return result;
-}
-
-// Fetch published Google Sheet CSV
-fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRuGKFqtvVZQnOJnyYZZqctzpM4eEyQCfGFjf7a73q7qEu--9Isli64EjEAP-uzRwD7XN5m-LJlEX3s/pub?gid=0&single=true&output=csv')
-  .then(resp=>resp.text())
-  .then(text=>{
-    const lines=text.split(/\r?\n/).filter(l=>l.trim()!=='');
-    const headers=parseCSVLine(lines.shift());
-    customerData=lines.map(line=>{
-      const vals=parseCSVLine(line);
-      const obj={};
-      headers.forEach((h,i)=>obj[h]=vals[i]);
-      return obj;
+    function setDefaultDates() {
+      const today = new Date();
+      invoiceDateInput.valueAsDate = today;
+      const due = new Date(today);
+      due.setDate(due.getDate() + 7);
+      dueDateInput.valueAsDate = due;
+      issuedDateText.textContent = today.toLocaleDateString();
+      invoiceNumberInput.value = formatInvoiceNumber(today);
+    }
+    setDefaultDates();
+    invoiceDateInput.addEventListener('change', () => {
+      const selectedDate = invoiceDateInput.value ? new Date(invoiceDateInput.value) : new Date();
+      invoiceNumberInput.value = formatInvoiceNumber(selectedDate);
     });
-    const select=document.getElementById('customerName');
-    customerData.forEach((row,index)=>{
-      const option=document.createElement('option');
-      option.textContent=row['CompanyName']||'';
-      option.dataset.index=index;
-      select.appendChild(option);
-    });
-  });
 
-// Auto-fill phone and full address
-document.getElementById('customerName').addEventListener('change',function(e){
-  const selectedOption=e.target.selectedOptions[0];
-  if(!selectedOption || selectedOption.dataset.index===undefined){
-    document.getElementById('customerPhone').value='';
-    document.getElementById('customerAddress').value='';
-    return;
-  }
-  const idx=parseInt(selectedOption.dataset.index);
-  const selectedCustomer=customerData[idx];
-  document.getElementById('customerPhone').value=selectedCustomer['Phone']||selectedCustomer['Contact']||'';
-  document.getElementById('customerAddress').value=selectedCustomer['Address']||selectedCustomer['FullAddress']||'';
-});
-</script>
+    // Item calculations
+    function calculateItemTotal(row){
+      const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+      const price = parseFloat(row.querySelector('.item-price').value) || 0;
+      row.querySelector('.item-total').textContent = (qty*price).toFixed(2);
+      updateSubtotal();
+    }
+    function updateSubtotal(){
+      let subtotal = 0;
+      document.querySelectorAll('#itemsTableBody tr').forEach(row => {
+        subtotal += parseFloat(row.querySelector('.item-total').textContent) || 0;
+      });
+      document.getElementById('subtotalValue').textContent = 'RM ' + subtotal.toFixed(2);
+    }
+    function attachListeners(row){
+      row.querySelector('.item-qty').addEventListener('input', ()=>calculateItemTotal(row));
+      row.querySelector('.item-price').addEventListener('input', ()=>calculateItemTotal(row));
+      row.querySelector('.remove-item').addEventListener('click', ()=>{
+        if(document.querySelectorAll('#itemsTableBody tr').length>1){
+          row.remove(); updateSubtotal();
+        } else { alert('At least one item is required.'); }
+      });
+    }
+    attachListeners(document.querySelector('#itemsTableBody tr'));
+    document.getElementById('addItemBtn').addEventListener('click', ()=>{
+      const tbody = document.getElementById('itemsTableBody');
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td class="border border-gray-300 px-3 py-2"><input type="number" class="item-qty w-full border-0 px-1 py-1 text-center" value="1" min="0" step="0.01"/></td>
+        <td class="border border-gray-300 px-3 py-2"><input type="text" class="item-desc w-full border-0 px-1 py-1" placeholder="Enter item/service description"/></td>
+        <td class="border border-gray-300 px-3 py-2"><input type="number" class="item-price w-full border-0 px-1 py-1 text-right" value="0.00" min="0" step="0.01"/></td>
+        <td class="border border-gray-300 px-3 py-2 text-right"><span class="item-total font-medium inline-block min-w-[70px] text-right">0.00</span></td>
+        <td class="border border-gray-300 px-3 py-2 text-center no-print"><button type="button" class="remove-item text-red-600 hover:text-red-800 font-medium">Remove</button></td>
+      `;
+      tbody.appendChild(newRow);
+      attachListeners(newRow);
+      updateSubtotal();
+    });
+    document.getElementById('printBtn').addEventListener('click',()=>window.print());
+    document.getElementById('saveBtn').addEventListener('click',()=>window.print());
+    document.getElementById('clearBtn').addEventListener('click', ()=>{
+      if(!confirm('Are you sure you want to clear all data?')) return;
+      invoiceNumberInput.value=''; document.getElementById('customerName').value='';
+      document.getElementById('customerPhone').value=''; document.getElementById('customerAddress').value='';
+      document.getElementById('jobDescription').value=''; setDefaultDates();
+      const tbody = document.getElementById('itemsTableBody');
+      tbody.innerHTML=document.querySelector('#itemsTableBody tr').outerHTML;
+      attachListeners(document.querySelector('#itemsTableBody tr'));
+      updateSubtotal();
+    });
+
+    // Google Sheet customer data
+    let customerData = [];
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuGKFqtvVZQnOJnyYZZqctzpM4eEyQCfGFjf7a73q7qEu--9Isli64EjEAP-uzRwD7XN5m-LJlEX3s/pub?gid=0&single=true&output=csv';
+    Papa.parse(sheetUrl, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results){
+        customerData = results.data;
+        const customerSelect = document.getElementById('customerName');
+        customerSelect.innerHTML = '<option value="">-- Select Customer --</option>';
+        customerData.forEach((c, idx)=>{
+          const option = document.createElement('option');
+          option.value = idx;
+          option.textContent = c.CompanyName;
+          customerSelect.appendChild(option);
+        });
+      }
+    });
+
+    document.getElementById('customerName').addEventListener('change', function(){
+      const idx = parseInt(this.value);
+      if(isNaN(idx) || !customerData[idx]) {
+        document.getElementById('customerPhone').value='';
+        document.getElementById('customerAddress').value='';
+        return;
+      }
+      const selected = customerData[idx];
+      document.getElementById('customerPhone').value=selected.Phone;
+      document.getElementById('customerAddress').value=selected.Address;
+    });
+  </script>
 </body>
 </html>
